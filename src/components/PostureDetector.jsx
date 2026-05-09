@@ -1,6 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { PoseLandmarker, FilesetResolver } from '@mediapipe/tasks-vision'
-import shared from './shared.module.css'
 
 function PostureDetector({ videoRef, ready, enabled }) {
   const canvasRef         = useRef(null)
@@ -10,10 +9,6 @@ function PostureDetector({ videoRef, ready, enabled }) {
   const badPostureStart = useRef(null);
   const numBadPosture = useRef(0)
   const enabledRef = useRef(enabled)
-
-  const [running, setRunning] = useState(false)
-  const [tilt, setTilt] = useState(null)
-  const [posture, setPosture] = useState(true)
 
 
   useEffect(() => {
@@ -25,6 +20,19 @@ function PostureDetector({ videoRef, ready, enabled }) {
     if (!ready) return
     loadModel()
   }, [ready])
+
+  const playAudio = async (voiceKey, messageKey) => {
+    try {
+      const response = await fetch(`http://localhost:3001/audio/${voiceKey}/${messageKey}`)
+      if (!response.ok) return
+      const blob = await response.blob()
+      const url = URL.createObjectURL(blob)
+      const audio = new Audio(url)
+      audio.play()
+    } catch (err) {
+      console.error("Audio fetch failed:", err)
+    }
+  }
 
   async function loadModel() {
 
@@ -109,6 +117,7 @@ function PostureDetector({ videoRef, ready, enabled }) {
       if (performance.now() - badPostureStart.current > 5000){
         if (numBadPosture.current > 15){
           console.log("SLOUCHING RAHHHHHH FOUND YOU MF")
+          playAudio("deku", "fixYourPosture")
         }
         numBadPosture.current = 0
         badPostureStart.current = null

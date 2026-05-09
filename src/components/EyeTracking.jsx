@@ -1,21 +1,15 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { FaceLandmarker, FilesetResolver } from '@mediapipe/tasks-vision'
-import shared from "./shared.module.css"
 
 
 function EyeTracker({ videoRef, ready, enabled }){
     const canvasRef = useRef(null)
     const rafRef            = useRef(null)
     const faceLandmarkerRef = useRef(null)
-    const eyeTrackingRef = useRef(true)
     const lookingAwayStart = useRef(null);
     const numAwayLooks = useRef(0)
     const audioPlayingRef = useRef(false)
     const enabledRef = useRef(enabled)
-
-    const [running, setRunning] = useState(false)
-    const [tilt, setTilt] = useState(null)
-    const [eyeTracking, setEyeTracking] = useState(true)
 
     useEffect(() => {
         enabledRef.current = enabled
