@@ -19,7 +19,7 @@ const elevenlabs = new ElevenLabsClient({
 })
 
 const voices = {
-    kratosV: "n5fC6zPG380LFQfIhumx",
+    kratos: "n5fC6zPG380LFQfIhumx",
     deku: "henIuc3B4M8m67bTv1JS"
 }
 
