@@ -1,22 +1,21 @@
 import { useEffect, useRef, useState } from 'react'
 import { FaceLandmarker, FilesetResolver } from '@mediapipe/tasks-vision'
 
-
-
-function EyeTracker({ videoRef, ready, enabled }){
-    const canvasRef = useRef(null)
+function EyeTracker({ videoRef, ready, enabled, voice }) {
+    const canvasRef         = useRef(null)
     const rafRef            = useRef(null)
     const faceLandmarkerRef = useRef(null)
-    const lookingAwayStart = useRef(null);
-    const numAwayLooks = useRef(0)
-    const audioPlayingRef = useRef(false)
-    const enabledRef = useRef(enabled)
-    const detectingRef = useRef(false)
+    const lookingAwayStart  = useRef(null)
+    const numAwayLooks      = useRef(0)
+    const audioPlayingRef   = useRef(false)
+    const enabledRef        = useRef(enabled)
+    const detectingRef      = useRef(false)
+    const voiceRef          = useRef(voice)
 
     const [running, setRunning] = useState(false)
-    useEffect(() => {
-        enabledRef.current = enabled
-    }, [enabled])
+
+    useEffect(() => { enabledRef.current = enabled }, [enabled])
+    useEffect(() => { voiceRef.current = voice }, [voice])
 
     useEffect(() => {
         if (!ready) return
@@ -45,7 +44,9 @@ function EyeTracker({ videoRef, ready, enabled }){
             'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm'
         )
         faceLandmarkerRef.current = await FaceLandmarker.createFromOptions(vision, {
-            baseOptions: { modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task' },
+            baseOptions: {
+                modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task'
+            },
             runningMode: 'VIDEO',
             numPoses: 1,
         })
@@ -55,7 +56,6 @@ function EyeTracker({ videoRef, ready, enabled }){
     }
 
     async function detect() {
-
         if (detectingRef.current) {
             rafRef.current = requestAnimationFrame(detect)
             return
@@ -73,15 +73,15 @@ function EyeTracker({ videoRef, ready, enabled }){
             canvas.width  = video.videoWidth
             canvas.height = video.videoHeight
         }
-        const ctx    = canvas.getContext('2d')
 
+        const ctx = canvas.getContext('2d')
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
 
         const result = await faceLandmarkerRef.current.detectForVideo(video, performance.now())
         if (result.faceLandmarks[0]) {
             const landmarks = result.faceLandmarks[0]
-            if (enabledRef.current){
-                computeEyeTracking(landmarks);
+            if (enabledRef.current) {
+                computeEyeTracking(landmarks)
             }
         }
 
@@ -89,32 +89,28 @@ function EyeTracker({ videoRef, ready, enabled }){
     }
 
     function computeEyeTracking(landmarks) {
-
-        const nose = landmarks[1];
-        const leftEye = landmarks[33];
-        const rightEye = landmarks[263];
+        const nose     = landmarks[1]
+        const leftEye  = landmarks[33]
+        const rightEye = landmarks[263]
 
         const avgEye = (leftEye.x + rightEye.x) / 2
+        console.log(avgEye - nose.x)
 
-        const diff = avgEye - nose.x
+        const lookingAway = Math.abs(avgEye - nose.x) > 0.02
 
-        console.log(diff);
-
-        const lookingAway = Math.abs(avgEye - nose.x) > 0.02;
-
-        if (lookingAway){
-            if (lookingAwayStart.current === null){
+        if (lookingAway) {
+            if (lookingAwayStart.current === null) {
                 lookingAwayStart.current = performance.now()
             }
-            if (performance.now() - lookingAwayStart.current > 3000){
-                if (numAwayLooks.current > 13 && !audioPlayingRef.current){
+            if (performance.now() - lookingAwayStart.current > 3000) {
+                if (numAwayLooks.current > 13 && !audioPlayingRef.current) {
                     console.log("hitting look away")
                     audioPlayingRef.current = true
-                    playAudio("deku", "getOffYourPhone")
+                    playAudio(voiceRef.current, "getOffYourPhone")
                     setTimeout(() => { audioPlayingRef.current = false }, 10000)
                 }
-                console.log(numAwayLooks);
-                numAwayLooks.current = 0
+                console.log(numAwayLooks)
+                numAwayLooks.current     = 0
                 lookingAwayStart.current = null
             }
             numAwayLooks.current += 1
@@ -128,4 +124,4 @@ function EyeTracker({ videoRef, ready, enabled }){
     )
 }
 
-export default EyeTracker;
+export default EyeTracker
