@@ -1,15 +1,24 @@
 import { useEffect, useRef, useState } from 'react'
 import { PoseLandmarker, FilesetResolver } from '@mediapipe/tasks-vision'
+import shared from './shared.module.css'
 
-function PostureDetector({ videoRef, ready}) {
+function PostureDetector({ videoRef, ready, enabled }) {
   const canvasRef         = useRef(null)
   const rafRef            = useRef(null)
   const poseLandmarkerRef = useRef(null)
   const postureRef = useRef(true)
+  const badPostureStart = useRef(null);
+  const numBadPosture = useRef(0)
+  const enabledRef = useRef(enabled)
 
   const [running, setRunning] = useState(false)
   const [tilt, setTilt] = useState(null)
   const [posture, setPosture] = useState(true)
+
+
+  useEffect(() => {
+      enabledRef.current = enabled
+  }, [enabled])
 
 
   useEffect(() => {
@@ -41,6 +50,18 @@ function PostureDetector({ videoRef, ready}) {
     const video  = videoRef.current
     const canvas = canvasRef.current
 
+    // Wait until video has real dimensions
+    if (video.videoWidth === 0 || video.videoHeight === 0) {
+      rafRef.current = requestAnimationFrame(detect)
+      return
+    }
+
+    // Sync canvas size if needed
+    if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
+      canvas.width  = video.videoWidth
+      canvas.height = video.videoHeight
+    }
+
     const ctx    = canvas.getContext('2d')
 
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
@@ -49,7 +70,7 @@ function PostureDetector({ videoRef, ready}) {
     if (result.landmarks[0]) {
       const landmarks = result.landmarks[0]
       drawOverlay(ctx, landmarks, canvas.width, canvas.height)
-      if (postureRef.current){
+      if (enabledRef.current){
         computePosture(landmarks);
       }
       
@@ -79,8 +100,21 @@ function PostureDetector({ videoRef, ready}) {
 
     const diff = (averageShoulderZ - headz) / Math.abs(averageShoulderZ)  // positive = head is closer than shoulders = slouching
     console.log(diff);
-    if (diff < 1.5) {      
-        console.log("Slouching!!")
+    const badPosture = diff < 1.5;
+    if (badPosture){
+      console.log("BAD POSTURE")
+      if (badPostureStart.current === null){
+        badPostureStart.current = performance.now()
+      }
+      if (performance.now() - badPostureStart.current > 5000){
+        if (numBadPosture.current > 15){
+          console.log("SLOUCHING RAHHHHHH FOUND YOU MF")
+        }
+        numBadPosture.current = 0
+        badPostureStart.current = null
+
+      }
+      numBadPosture.current += 1
     }
   }
 
@@ -94,15 +128,6 @@ function PostureDetector({ videoRef, ready}) {
         borderRadius: '12px',
         marginTop: '1rem'
       }} />
-    {/* //   <video ref={videoRef} autoPlay playsInline muted style={{ display: 'none' }} />
-    //   <p>Head tilt: {tilt !== null ? `${tilt}°` : '–'}</p> */}
-      {/* <label class="switch"> */}
-      <input type="checkbox" checked={posture} onChange={() => {
-            postureRef.current = !postureRef.current
-            setPosture(p => !p)
-       }} />
-        
-
     </div>
   )
 }
