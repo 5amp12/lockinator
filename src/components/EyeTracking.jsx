@@ -26,9 +26,9 @@ function EyeTracker({ videoRef, ready, enabled }){
         loadModel()
     }, [ready])
 
-    const playAudio = async (messageKey) => {
-        try {   
-            const response = await fetch(`http://localhost:3001/audio/${messageKey}`)
+    const playAudio = async (voiceKey, messageKey) => {
+        try {
+            const response = await fetch(`http://localhost:3001/audio/${voiceKey}/${messageKey}`)
             if (!response.ok) return
             const blob = await response.blob()
             const url = URL.createObjectURL(blob)
@@ -107,7 +107,7 @@ function EyeTracker({ videoRef, ready, enabled }){
                 if (numAwayLooks.current > 15 && !audioPlayingRef.current){
                     console.log("hitting look away")
                     audioPlayingRef.current = true
-                    playAudio("getOffYourPhone")
+                    playAudio("deku", "getOffYourPhone")
                     setTimeout(() => { audioPlayingRef.current = false }, 10000)
                 }
                 console.log(numAwayLooks);
