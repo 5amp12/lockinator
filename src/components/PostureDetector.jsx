@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { PoseLandmarker, FilesetResolver } from '@mediapipe/tasks-vision'
 
 function PostureDetector({ videoRef, ready, enabled }) {
@@ -9,8 +9,9 @@ function PostureDetector({ videoRef, ready, enabled }) {
   const badPostureStart = useRef(null);
   const numBadPosture = useRef(0)
   const enabledRef = useRef(enabled)
+  const detectingRef = useRef(false)
 
-
+  const [running, setRunning] = useState(false)
   useEffect(() => {
       enabledRef.current = enabled
   }, [enabled])
@@ -55,6 +56,11 @@ function PostureDetector({ videoRef, ready, enabled }) {
   }
 
   async function detect() { 
+
+    if (detectingRef.current) {
+        rafRef.current = requestAnimationFrame(detect)
+        return
+    }
     const video  = videoRef.current
     const canvas = canvasRef.current
 

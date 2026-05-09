@@ -1,5 +1,6 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { FaceLandmarker, FilesetResolver } from '@mediapipe/tasks-vision'
+
 
 
 function EyeTracker({ videoRef, ready, enabled }){
@@ -10,7 +11,9 @@ function EyeTracker({ videoRef, ready, enabled }){
     const numAwayLooks = useRef(0)
     const audioPlayingRef = useRef(false)
     const enabledRef = useRef(enabled)
+    const detectingRef = useRef(false)
 
+    const [running, setRunning] = useState(false)
     useEffect(() => {
         enabledRef.current = enabled
     }, [enabled])
@@ -52,6 +55,12 @@ function EyeTracker({ videoRef, ready, enabled }){
     }
 
     async function detect() {
+
+        if (detectingRef.current) {
+            rafRef.current = requestAnimationFrame(detect)
+            return
+        }
+
         const video  = videoRef.current
         const canvas = canvasRef.current
 
@@ -97,8 +106,8 @@ function EyeTracker({ videoRef, ready, enabled }){
             if (lookingAwayStart.current === null){
                 lookingAwayStart.current = performance.now()
             }
-            if (performance.now() - lookingAwayStart.current > 5000){
-                if (numAwayLooks.current > 15 && !audioPlayingRef.current){
+            if (performance.now() - lookingAwayStart.current > 3000){
+                if (numAwayLooks.current > 13 && !audioPlayingRef.current){
                     console.log("hitting look away")
                     audioPlayingRef.current = true
                     playAudio("deku", "getOffYourPhone")
