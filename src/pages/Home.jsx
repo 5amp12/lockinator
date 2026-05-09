@@ -14,6 +14,7 @@ function Home() {
   const [postureEnabled, setPostureEnabled] = useState(true)
   const [eyeEnabled, setEyeEnabled] = useState(true)
     const [voice, setVoice] = useState("deku")
+    const [profanity, setProfanity] = useState(false)
   return (
     <div className={styles.page}>
       <video ref={videoRef} autoPlay playsInline muted className={styles.hiddenVideo} />
@@ -37,8 +38,8 @@ function Home() {
             </select>
         </div>
  
-      <PostureDetector videoRef={videoRef} ready={ready} enabled={postureEnabled} voice={voice} />
-      <EyeTracking      videoRef={videoRef} ready={ready} enabled={eyeEnabled} voice={voice}/>
+      <PostureDetector videoRef={videoRef} ready={ready} enabled={postureEnabled} voice={voice} profanity={profanity} />
+      <EyeTracking      videoRef={videoRef} ready={ready} enabled={eyeEnabled} voice={voice} profanity={profanity} />
 
       <div className={styles.toggleGroup}>
         <div className={styles.toggleWrapper}>
@@ -48,6 +49,10 @@ function Home() {
         <div className={styles.toggleWrapper}>
           <span className={styles.toggleLabel}>Eye tracking</span>
           <input type="checkbox" checked={eyeEnabled} className={styles.checkbox} onChange={() => setEyeEnabled(p => !p)} />
+        </div>
+        <div className={styles.toggleWrapper}>
+            <span className={styles.toggleLabel}>Profanity</span>
+            <input type="checkbox" checked={profanity} className={styles.checkbox} onChange={() => setProfanity(p => !p)} />
         </div>
       </div>
     </div>

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { PoseLandmarker, FilesetResolver } from '@mediapipe/tasks-vision'
 
-function PostureDetector({ videoRef, ready, enabled, voice }) {
+function PostureDetector({ videoRef, ready, enabled, voice, profanity }) {
   const canvasRef         = useRef(null)
   const rafRef            = useRef(null)
   const poseLandmarkerRef = useRef(null)
@@ -10,11 +10,13 @@ function PostureDetector({ videoRef, ready, enabled, voice }) {
   const enabledRef        = useRef(enabled)
   const detectingRef      = useRef(false)
   const voiceRef          = useRef(voice)
+  const profanityRef = useRef(profanity)
 
   const [running, setRunning] = useState(false)
 
   useEffect(() => { enabledRef.current = enabled }, [enabled])
   useEffect(() => { voiceRef.current = voice }, [voice])
+  useEffect(() => { profanityRef.current = profanity }, [profanity])
 
   useEffect(() => {
     if (!ready) return
@@ -118,7 +120,8 @@ function PostureDetector({ videoRef, ready, enabled, voice }) {
       if (performance.now() - badPostureStart.current > 5000) {
         if (numBadPosture.current > 15) {
           console.log("SLOUCHING RAHHHHHH FOUND YOU MF")
-          playAudio(voiceRef.current, "fixYourPosture")
+          const messageKey = profanityRef.current ? "fixYourPostureProfane" : "fixYourPosture"
+          playAudio(voiceRef.current, messageKey)
         }
         numBadPosture.current   = 0
         badPostureStart.current = null

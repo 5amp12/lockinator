@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { FaceLandmarker, FilesetResolver } from '@mediapipe/tasks-vision'
 
-function EyeTracker({ videoRef, ready, enabled, voice }) {
+function EyeTracker({ videoRef, ready, enabled, voice, profanity }) {
     const canvasRef         = useRef(null)
     const rafRef            = useRef(null)
     const faceLandmarkerRef = useRef(null)
@@ -11,11 +11,13 @@ function EyeTracker({ videoRef, ready, enabled, voice }) {
     const enabledRef        = useRef(enabled)
     const detectingRef      = useRef(false)
     const voiceRef          = useRef(voice)
+    const profanityRef = useRef(profanity)
 
     const [running, setRunning] = useState(false)
 
     useEffect(() => { enabledRef.current = enabled }, [enabled])
     useEffect(() => { voiceRef.current = voice }, [voice])
+    useEffect(() => { profanityRef.current = profanity }, [profanity])
 
     useEffect(() => {
         if (!ready) return
@@ -106,7 +108,8 @@ function EyeTracker({ videoRef, ready, enabled, voice }) {
                 if (numAwayLooks.current > 13 && !audioPlayingRef.current) {
                     console.log("hitting look away")
                     audioPlayingRef.current = true
-                    playAudio(voiceRef.current, "getOffYourPhone")
+                    const messageKey = profanityRef.current ? "getOffYourPhoneProfane" : "getOffYourPhone"
+                    playAudio(voiceRef.current, messageKey)
                     setTimeout(() => { audioPlayingRef.current = false }, 10000)
                 }
                 console.log(numAwayLooks)
