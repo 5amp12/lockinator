@@ -5,13 +5,17 @@ function PostureDetector({ videoRef, ready, enabled, voice }) {
   const canvasRef         = useRef(null)
   const rafRef            = useRef(null)
   const poseLandmarkerRef = useRef(null)
-  const badPostureStart   = useRef(null)
-  const numBadPosture     = useRef(0)
-  const enabledRef        = useRef(enabled)
-  const detectingRef      = useRef(false)
-  const voiceRef          = useRef(voice)
-
+  const postureRef = useRef(true)
+  const badPostureStart = useRef(null);
+  const numBadPosture = useRef(0)
+  const enabledRef = useRef(enabled)
+  const detectingRef = useRef(false)
+  const voiceRef = useRef(voice)
   const [running, setRunning] = useState(false)
+
+  useEffect(() => {
+      enabledRef.current = enabled
+  }, [enabled])
 
   useEffect(() => { enabledRef.current = enabled }, [enabled])
   useEffect(() => { voiceRef.current = voice }, [voice])
