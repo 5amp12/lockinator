@@ -1,10 +1,8 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { PoseLandmarker, FilesetResolver } from '@mediapipe/tasks-vision'
 
-function PostureDetector() {
-  const videoRef          = useRef(null)
+function PostureDetector({ videoRef, ready}) {
   const canvasRef         = useRef(null)
-  const streamRef         = useRef(null)
   const rafRef            = useRef(null)
   const poseLandmarkerRef = useRef(null)
   const postureRef = useRef(true)
@@ -13,11 +11,13 @@ function PostureDetector() {
   const [tilt, setTilt] = useState(null)
   const [posture, setPosture] = useState(true)
 
-  async function start() {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false })
-    streamRef.current = stream
-    videoRef.current.srcObject = stream
-    await videoRef.current.play()
+
+  useEffect(() => {
+    if (!ready) return
+    loadModel()
+  }, [ready])
+
+  async function loadModel() {
 
     const { videoWidth: w, videoHeight: h } = videoRef.current
     canvasRef.current.width  = w
@@ -40,6 +40,7 @@ function PostureDetector() {
   async function detect() { 
     const video  = videoRef.current
     const canvas = canvasRef.current
+
     const ctx    = canvas.getContext('2d')
 
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
@@ -84,21 +85,11 @@ function PostureDetector() {
   }
 
 
-  function stop() {
-    cancelAnimationFrame(rafRef.current)
-    streamRef.current?.getTracks().forEach(t => t.stop())
-    videoRef.current.srcObject = null
-    setRunning(false)
-    setTilt(null)   
-  }
-
   return (
     <div>
-      <canvas ref={canvasRef} />
-      <video ref={videoRef} autoPlay playsInline muted style={{ display: 'none' }} />
-      <p>Head tilt: {tilt !== null ? `${tilt}°` : '–'}</p>
-      <button onClick={start} disabled={running}>Start</button>
-      <button onClick={stop}  disabled={!running}>Stop</button>
+      <canvas ref={canvasRef}   /> 
+    {/* //   <video ref={videoRef} autoPlay playsInline muted style={{ display: 'none' }} />
+    //   <p>Head tilt: {tilt !== null ? `${tilt}°` : '–'}</p> */}
       {/* <label class="switch"> */}
       <input type="checkbox" checked={posture} onChange={() => {
             postureRef.current = !postureRef.current
