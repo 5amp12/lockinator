@@ -87,7 +87,13 @@ function PostureDetector({ videoRef, ready}) {
 
   return (
     <div>
-      <canvas ref={canvasRef}   /> 
+      <canvas ref={canvasRef} style={{ 
+        display: 'block',
+        width: '100%',
+        maxWidth: '640px',
+        borderRadius: '12px',
+        marginTop: '1rem'
+      }} />
     {/* //   <video ref={videoRef} autoPlay playsInline muted style={{ display: 'none' }} />
     //   <p>Head tilt: {tilt !== null ? `${tilt}°` : '–'}</p> */}
       {/* <label class="switch"> */}
