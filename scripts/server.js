@@ -18,7 +18,11 @@ const elevenlabs = new ElevenLabsClient({
     apiKey: process.env.ELEVENLABS_API_KEY,
 })
 
-const kratosVoiceID = "n5fC6zPG380LFQfIhumx"
+const voices = {
+    kratosV: "n5fC6zPG380LFQfIhumx",
+    deku: "henIuc3B4M8m67bTv1JS"
+}
+
 const outputFormat = "mp3_44100_128"
 const modelId = "eleven_v3"
 
@@ -28,7 +32,8 @@ const messages = {
     fixYourPosture: "FIX YOUR POSTURE!"
 }
 
-app.get("/audio/:messageKey", async (req, res) => {
+app.get("/audio/:voiceKey/:messageKey", async (req, res) => {
+    const voiceID = voices[req.params.voiceKey]
     const text = messages[req.params.messageKey]
 
     if (!text) {
@@ -36,7 +41,7 @@ app.get("/audio/:messageKey", async (req, res) => {
     }
 
     try {
-        const audio = await elevenlabs.textToSpeech.convert(kratosVoiceID, {
+        const audio = await elevenlabs.textToSpeech.convert(voiceID, {
             text,
             modelId,
             outputFormat,
