@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { FaceLandmarker, FilesetResolver } from '@mediapipe/tasks-vision'
 
-function EyeTracker({ videoRef, ready, enabled, voice }) {
-    const canvasRef         = useRef(null)
-    const rafRef            = useRef(null)
+
+
+function EyeTracker({ videoRef, ready, enabled, voice }){
+    const canvasRef = useRef(null)
+    const rafRef = useRef(null)
     const faceLandmarkerRef = useRef(null)
     const lookingAwayStart  = useRef(null)
     const numAwayLooks      = useRef(0)
@@ -96,10 +98,19 @@ function EyeTracker({ videoRef, ready, enabled, voice }) {
         const avgEye = (leftEye.x + rightEye.x) / 2
         console.log(avgEye - nose.x)
 
-        const lookingAway = Math.abs(avgEye - nose.x) > 0.02
+        // console.log(diff);
 
-        if (lookingAway) {
-            if (lookingAwayStart.current === null) {
+        const lookingAway = Math.abs(avgEye - nose.x) > 0.02;
+
+        const avgEyeH = (leftEye.y + rightEye.y) / 2
+
+        const eyeWidth = Math.abs(rightEye.x - leftEye.x)
+        const diff2 = (avgEyeH - nose.y) / eyeWidth
+        const lookingDown = diff2 < -0.80;
+        console.log(diff2)
+
+        if (lookingAway || lookingDown){
+            if (lookingAwayStart.current === null){
                 lookingAwayStart.current = performance.now()
             }
             if (performance.now() - lookingAwayStart.current > 3000) {
@@ -115,6 +126,9 @@ function EyeTracker({ videoRef, ready, enabled, voice }) {
             }
             numAwayLooks.current += 1
         }
+        // Does not work properly
+        
+        // console.log(diff2);
     }
 
     return (

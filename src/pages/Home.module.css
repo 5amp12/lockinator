@@ -1,6 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 
-/* Make sure the root elements fill the full viewport */
 html, body, #root {
   height: 100%;
   margin: 0;
@@ -24,11 +23,14 @@ html, body, #root {
 
 .page {
   min-height: 100vh;
-  background: #0a0a0a;
+  background: #0d0d0d;
   display: flex;
   flex-direction: column;
-  align-items: center;        /* centre everything horizontally */
-  padding: 2rem 1.5rem;
+  align-items: center;
+  padding: 1.5rem 1.5rem;
+  font-family: 'Inter', sans-serif;
+  color: #e2e2e2;
+  box-sizing: border-box;
 }
 
 .hiddenVideo {
@@ -37,42 +39,49 @@ html, body, #root {
 
 /* ── Header ── */
 .header {
+  width: 100%;
+  max-width: 720px;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  margin-bottom: 2rem;
+  margin-bottom: 1.25rem;
 }
 
 .title {
-  font-size: 26px;
-  font-weight: 300;
-  letter-spacing: -0.03em;
-  color: #e8e6e1;
-  margin-bottom: 3px;
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: #e2e2e2;
+  margin: 0;
 }
 
 .subtitle {
-  font-size: 13px;
-  color: #555;
+  font-size: 12px;
+  color: #4a4a4a;
   font-weight: 400;
-  letter-spacing: 0.01em;
+  margin-top: 2px;
+}
+
+.topBar{
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
 .statusPill {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
-  color: #555;
+  color: #4a4a4a;
   background: #161616;
-  border: 1px solid #222;
+  border: 1px solid #1f1f1f;
   border-radius: 20px;
   padding: 5px 12px;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
   transition: color 0.3s, border-color 0.3s;
   white-space: nowrap;
-  margin-top: 4px;
 }
 
 .statusPill[data-active='true'] {
@@ -81,33 +90,36 @@ html, body, #root {
 }
 
 .statusDot {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: currentColor;
 }
 
 .statusPill[data-active='true'] .statusDot {
-  animation: pulse 2s ease-in-out infinite;
+  animation: blink 2s ease-in-out infinite;
 }
 
-@keyframes pulse {
+@keyframes blink {
   0%, 100% { opacity: 1; }
-  50%       { opacity: 0.4; }
+  50%       { opacity: 0.3; }
 }
 
 /* ── Camera card ── */
 .cameraCard {
-  border: 1px solid #1e1e1e;
-  border-radius: 16px;
+  width: 100%;
+  max-width: 720px;
+  border: 1px solid #1a1a1a;
+  border-radius: 14px;
   overflow: hidden;
-  margin-bottom: 1rem;
+  margin-bottom: 0.875rem;
   background: #111;
 }
 
 .cameraPreview {
-  aspect-ratio: 16 / 9;
-  background: #0e0e0e;
+  /* Fixed height instead of aspect-ratio so it doesn't dominate */
+  height: 280px;
+  background: #0c0c0c;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -124,31 +136,118 @@ html, body, #root {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  color: #333;
-  font-size: 13px;
-  letter-spacing: 0.04em;
+  gap: 8px;
+  color: #2a2a2a;
+  font-size: 12px;
+  letter-spacing: 0.05em;
 }
 
+/* ── Camera controls bar ── */
 .cameraControls {
   display: flex;
+  align-items: center;
   gap: 10px;
-  padding: 14px 16px;
+  padding: 10px 14px;
 }
 
+/* Timer config lives inline in the controls bar */
+.timerConfig {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto; /* push to right side of controls bar */
+}
+
+
+.timerConfig input {
+  width: 44px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: 'JetBrains Mono', monospace;
+  border: 1px solid #222;
+  border-radius: 7px;
+  padding: 5px 0;
+  background: #0d0d0d;
+  color: #e2e2e2;
+  -moz-appearance: textfield;
+  transition: border-color 0.2s;
+}
+
+.timerField input:focus {
+  outline: none;
+  border-color: #333;
+}
+
+.timerField input::-webkit-outer-spin-button,
+.timerField input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+.timerUnit {
+  font-size: 13px;
+  color: #7a7a7a;
+  font-family: 'Inter', sans-serif;
+  margin-right: 4px;
+}
+
+.timerSeparator {
+  font-size: 11px;
+  color: #333;
+  margin: 0 2px;
+}
+
+/* Countdown badge overlaid on video */
+.timerBadge {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  background: rgba(13, 13, 13, 0.7);
+  color: #aaa;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: 'JetBrains Mono', monospace;
+  padding: 8px 20px;
+  border-radius: 20px;
+  border: 1px solid #222;
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+  letter-spacing: 0.02em;
+  z-index: 100;
+}
+
+.timerWarning {
+  color: #f87171 !important;
+  border-color: #3a1a1a !important;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+
+
+.controls{
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+/* ── Buttons ── */
 .btnStart,
 .btnStop {
   display: flex;
   align-items: center;
-  gap: 7px;
-  padding: 8px 18px;
+  gap: 6px;
+  padding: 7px 16px;
   border-radius: 8px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 13px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
   font-weight: 500;
   cursor: pointer;
   border: 1px solid transparent;
   transition: opacity 0.2s, background 0.2s;
+  letter-spacing: 0.01em;
 }
 
 .btnStart {
@@ -157,9 +256,7 @@ html, body, #root {
   border-color: #1a3a25;
 }
 
-.btnStart:hover:not(:disabled) {
-  background: #163d23;
-}
+.btnStart:hover:not(:disabled) { background: #163d23; }
 
 .btnStop {
   background: #2e0f0f;
@@ -167,109 +264,176 @@ html, body, #root {
   border-color: #3a1a1a;
 }
 
-.btnStop:hover:not(:disabled) {
-  background: #3d1616;
-}
+.btnStop:hover:not(:disabled) { background: #3d1616; }
 
 .btnStart:disabled,
 .btnStop:disabled {
-  opacity: 0.3;
+  opacity: 0.25;
   cursor: not-allowed;
 }
 
 /* ── Stat modules ── */
 .modules {
+  width: 100%;
+  max-width: 720px;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 1rem;
+  gap: 8px;
+  margin-bottom: 0.875rem;
 }
 
 .moduleCard {
   background: #111;
-  border: 1px solid #1e1e1e;
-  border-radius: 14px;
-  padding: 1.2rem 1.4rem;
+  border: 1px solid #1a1a1a;
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
 }
 
 .moduleLabel {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 500;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
-  color: #444;
+  color: #3a3a3a;
   margin-bottom: 8px;
 }
 
 .moduleStat {
-  font-family: 'DM Mono', monospace;
-  font-size: 36px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 32px;
   font-weight: 400;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.03em;
   line-height: 1;
   margin-bottom: 4px;
   transition: color 0.4s;
 }
 
-.moduleStat[data-state='idle'] { color: #333; }
+.moduleStat[data-state='idle'] { color: #2a2a2a; }
 .moduleStat[data-state='good'] { color: #4ade80; }
 .moduleStat[data-state='warn'] { color: #fbbf24; }
 .moduleStat[data-state='bad']  { color: #f87171; }
 
 .moduleSubLabel {
-  font-size: 12px;
-  color: #444;
+  font-size: 11px;
+  color: #3a3a3a;
 }
 
-
-.toggleGroup {
+.videoWrapper {
+  position: relative;
+  width: 100%;
+  max-width: 720px;
+  margin-bottom: 0.875rem;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid #1a1a1a;
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-top: 1rem;
-}
-
-
-.toggleWrapper {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 0;
+  justify-content: center;
 }
 
 .toggleLabel {
   font-size: 13px;
-  color: #aaa;
-  font-family: 'DM Sans', sans-serif;
+  color: #888;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
 }
 
 .checkbox {
   appearance: none;
-  width: 44px ;
-  height: 24px;
-  border-radius: 12px;
-  background: #333;
+  width: 36px;
+  height: 20px;
+  border-radius: 10px;
+  background: #222;
   cursor: pointer;
   position: relative;
   transition: background 0.2s;
+  flex-shrink: 0;
 }
 
 .checkbox::after {
   content: '';
   position: absolute;
-  width: 18px;
-  height: 18px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
-  background: white;
+  background: #555;
   top: 3px;
   left: 3px;
-  transition: transform 0.2s;
+  transition: transform 0.2s, background 0.2s;
 }
 
 .checkbox:checked {
-  background: #00c97a;
+  background: #0f2e1a;
+  border: 1px solid #1a3a25;
 }
 
 .checkbox:checked::after {
-  transform: translateX(20px);
+  background: #4ade80;
+  transform: translateX(16px);
+}
+
+/* ── Settings group ── */
+.toggleGroup {
+  width: 100%;
+  max-width: 720px;
+  background: #111;
+  border: 1px solid #1a1a1a;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Toggles laid out horizontally */
+.toggleRow {
+  display: flex;
+  flex-direction: row;
+  border-bottom: 1px solid #161616;
+}
+
+.toggleWrapper {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+
+.toggleWrapper:not(:last-child) {
+  border-right: 1px solid #161616;
+}
+
+/* Voice row */
+.voiceRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+}
+
+.voicePills {
+  display: flex;
+  gap: 6px;
+}
+
+.voicePill {
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  border: 1px solid #222;
+  background: #1a1a1a;
+  color: #666;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.voicePill:hover {
+  background: #222;
+  color: #aaa;
+}
+
+.voicePillActive {
+  background: #0f2e1a;
+  color: #4ade80;
+  border-color: #1a3a25;
 }
