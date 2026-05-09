@@ -1,0 +1,259 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap');
+
+/* Make sure the root elements fill the full viewport */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
+
+.page {
+  min-height: 100vh;
+  background: #0a0a0a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;        /* centre everything horizontally */
+  padding: 2rem 1.5rem;
+}
+
+.hiddenVideo {
+  display: none;
+}
+
+/* ── Header ── */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 26px;
+  font-weight: 300;
+  letter-spacing: -0.03em;
+  color: #e8e6e1;
+  margin-bottom: 3px;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: #555;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+.statusPill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #555;
+  background: #161616;
+  border: 1px solid #222;
+  border-radius: 20px;
+  padding: 5px 12px;
+  letter-spacing: 0.02em;
+  transition: color 0.3s, border-color 0.3s;
+  white-space: nowrap;
+  margin-top: 4px;
+}
+
+.statusPill[data-active='true'] {
+  color: #4ade80;
+  border-color: #1a3a25;
+}
+
+.statusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.statusPill[data-active='true'] .statusDot {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+/* ── Camera card ── */
+.cameraCard {
+  border: 1px solid #1e1e1e;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  background: #111;
+}
+
+.cameraPreview {
+  aspect-ratio: 16 / 9;
+  background: #0e0e0e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid #1a1a1a;
+  position: relative;
+  overflow: hidden;
+}
+
+.cameraPreview[data-active='true'] {
+  background: #050505;
+}
+
+.cameraOff {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: #333;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+
+.cameraControls {
+  display: flex;
+  gap: 10px;
+  padding: 14px 16px;
+}
+
+.btnStart,
+.btnStop {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: opacity 0.2s, background 0.2s;
+}
+
+.btnStart {
+  background: #0f2e1a;
+  color: #4ade80;
+  border-color: #1a3a25;
+}
+
+.btnStart:hover:not(:disabled) {
+  background: #163d23;
+}
+
+.btnStop {
+  background: #2e0f0f;
+  color: #f87171;
+  border-color: #3a1a1a;
+}
+
+.btnStop:hover:not(:disabled) {
+  background: #3d1616;
+}
+
+.btnStart:disabled,
+.btnStop:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* ── Stat modules ── */
+.modules {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+
+.moduleCard {
+  background: #111;
+  border: 1px solid #1e1e1e;
+  border-radius: 14px;
+  padding: 1.2rem 1.4rem;
+}
+
+.moduleLabel {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #444;
+  margin-bottom: 8px;
+}
+
+.moduleStat {
+  font-family: 'DM Mono', monospace;
+  font-size: 36px;
+  font-weight: 400;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  margin-bottom: 4px;
+  transition: color 0.4s;
+}
+
+.moduleStat[data-state='idle'] { color: #333; }
+.moduleStat[data-state='good'] { color: #4ade80; }
+.moduleStat[data-state='warn'] { color: #fbbf24; }
+.moduleStat[data-state='bad']  { color: #f87171; }
+
+.moduleSubLabel {
+  font-size: 12px;
+  color: #444;
+}
+
+
+.toggleGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 1rem;
+}
+
+
+.toggleWrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+}
+
+.toggleLabel {
+  font-size: 13px;
+  color: #aaa;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.checkbox {
+  appearance: none;
+  width: 44px ;
+  height: 24px;
+  border-radius: 12px;
+  background: #333;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.2s;
+}
+
+.checkbox::after {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: white;
+  top: 3px;
+  left: 3px;
+  transition: transform 0.2s;
+}
+
+.checkbox:checked {
+  background: #00c97a;
+}
+
+.checkbox:checked::after {
+  transform: translateX(20px);
+}
