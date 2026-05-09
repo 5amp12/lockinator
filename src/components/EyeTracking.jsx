@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from 'react'
 import { FaceLandmarker, FilesetResolver } from '@mediapipe/tasks-vision'
 
@@ -9,6 +8,7 @@ function EyeTracker({ videoRef, ready }){
     const postureRef = useRef(true)
     const lookingAwayStart = useRef(null);
     const numAwayLooks = useRef(0)
+    const audioPlayingRef = useRef(false)
 
     const [running, setRunning] = useState(false)
     const [tilt, setTilt] = useState(null)
@@ -20,35 +20,47 @@ function EyeTracker({ videoRef, ready }){
         if (!ready) return
         loadModel()
     }, [ready])
+
+    const playAudio = async (messageKey) => {
+        try {
+            const response = await fetch(`http://localhost:3001/audio/${messageKey}`)
+            if (!response.ok) return
+            const blob = await response.blob()
+            const url = URL.createObjectURL(blob)
+            const audio = new Audio(url)
+            audio.play()
+        } catch (err) {
+            console.error("Audio fetch failed:", err)
+        }
+    }
+
     async function loadModel() {
         const { videoWidth: w, videoHeight: h } = videoRef.current
         canvasRef.current.width  = w
         canvasRef.current.height = h
 
-        // Load model FIRST, then start the loop
         const vision = await FilesetResolver.forVisionTasks(
-        'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm'
+            'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm'
         )
         faceLandmarkerRef.current = await FaceLandmarker.createFromOptions(vision, {
-        baseOptions: { modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task' },
-        runningMode: 'VIDEO',
-        numPoses: 1,
+            baseOptions: { modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task' },
+            runningMode: 'VIDEO',
+            numPoses: 1,
         })
 
         setRunning(true)
-        rafRef.current = requestAnimationFrame(detect)  // ← start loop after model ready
+        rafRef.current = requestAnimationFrame(detect)
     }
 
-    async function detect() { 
+    async function detect() {
         const video  = videoRef.current
         const canvas = canvasRef.current
-        // Wait until video has real dimensions
+
         if (video.videoWidth === 0 || video.videoHeight === 0) {
             rafRef.current = requestAnimationFrame(detect)
             return
         }
 
-        // Sync canvas size if needed
         if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
             canvas.width  = video.videoWidth
             canvas.height = video.videoHeight
@@ -57,27 +69,16 @@ function EyeTracker({ videoRef, ready }){
 
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
 
-        const result = await faceLandmarkerRef.current.detectForVideo(video, performance.now())  // ← ref
+        const result = await faceLandmarkerRef.current.detectForVideo(video, performance.now())
         if (result.faceLandmarks[0]) {
             const landmarks = result.faceLandmarks[0]
-            // drawOverlay(ctx, landmarks, canvas.width, canvas.height)
             if (postureRef.current){
                 computeEyeTracking(landmarks);
-            }   
+            }
         }
 
         rafRef.current = requestAnimationFrame(detect)
     }
-
-    //setting skeletion lines overlay
-    // function drawOverlay(ctx, landmarks, canvasW, canvasH) {
-    //     landmarks.forEach(pt => {
-    //         ctx.beginPath()
-    //         ctx.arc(pt.x * canvasW, pt.y * canvasH, 5, 0, 2 * Math.PI)
-    //         ctx.fillStyle = 'red'
-    //         ctx.fill()
-    //     })
-    // } 
 
     function computeEyeTracking(landmarks) {
 
@@ -94,12 +95,13 @@ function EyeTracker({ videoRef, ready }){
         if (lookingAway){
             if (lookingAwayStart.current === null){
                 lookingAwayStart.current = performance.now()
-                
             }
             if (performance.now() - lookingAwayStart.current > 5000){
-                if (numAwayLooks.current > 40){
-                    //Looking away consistently
-                    console.log("GET OFF YOUR PHONE");
+                if (numAwayLooks.current > 20 && !audioPlayingRef.current){
+                    console.log("hitting look away")
+                    audioPlayingRef.current = true
+                    playAudio("getOffYourPhone")
+                    setTimeout(() => { audioPlayingRef.current = false }, 10000)
                 }
                 console.log(numAwayLooks);
                 numAwayLooks.current = 0
@@ -108,31 +110,15 @@ function EyeTracker({ videoRef, ready }){
             }
             numAwayLooks.current += 1
         }
-
-        // // Does not work properly
-        // const avgEyeH = (leftEye.y + rightEye.x) / 2
-
-        // const diff2 = avgEyeH - nose.y
-
-        // if (diff2 < -0.08){
-        //     console.log("Get of your phone height");
-        // }
-        // console.log(diff2);
     }
-
 
     return (
         <div>
             <canvas ref={canvasRef} style={{ display: 'none' }}/>
-        {/* // <video ref={videoRef} autoPlay playsInline muted style={{ display: 'none' }} />
-        // <p>Head tilt: {tilt !== null ? `${tilt}°` : '–'}</p> */}
-        {/* <label class="switch"> */}
-        <input type="checkbox" checked={posture} onChange={() => {
+            <input type="checkbox" checked={posture} onChange={() => {
                 postureRef.current = !postureRef.current
                 setPosture(p => !p)
-        }} />
-            
-
+            }} />
         </div>
     )
 }
