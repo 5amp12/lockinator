@@ -1,20 +1,25 @@
 import { useEffect, useRef, useState } from 'react'
 import { FaceLandmarker, FilesetResolver } from '@mediapipe/tasks-vision'
+import shared from "./shared.module.css"
 
-function EyeTracker({ videoRef, ready }){
+
+function EyeTracker({ videoRef, ready, enabled }){
     const canvasRef = useRef(null)
     const rafRef            = useRef(null)
     const faceLandmarkerRef = useRef(null)
-    const postureRef = useRef(true)
+    const eyeTrackingRef = useRef(true)
     const lookingAwayStart = useRef(null);
     const numAwayLooks = useRef(0)
     const audioPlayingRef = useRef(false)
+    const enabledRef = useRef(enabled)
 
     const [running, setRunning] = useState(false)
     const [tilt, setTilt] = useState(null)
-    const [posture, setPosture] = useState(true)
-    const [isLookingAway, setIsLookingAway] = useState(false);
+    const [eyeTracking, setEyeTracking] = useState(true)
 
+    useEffect(() => {
+        enabledRef.current = enabled
+    }, [enabled])
 
     useEffect(() => {
         if (!ready) return
@@ -72,7 +77,7 @@ function EyeTracker({ videoRef, ready }){
         const result = await faceLandmarkerRef.current.detectForVideo(video, performance.now())
         if (result.faceLandmarks[0]) {
             const landmarks = result.faceLandmarks[0]
-            if (postureRef.current){
+            if (enabledRef.current){
                 computeEyeTracking(landmarks);
             }
         }
@@ -90,6 +95,8 @@ function EyeTracker({ videoRef, ready }){
 
         const diff = avgEye - nose.x
 
+        console.log(diff);
+
         const lookingAway = Math.abs(avgEye - nose.x) > 0.02;
 
         if (lookingAway){
@@ -105,7 +112,6 @@ function EyeTracker({ videoRef, ready }){
                 }
                 console.log(numAwayLooks);
                 numAwayLooks.current = 0
-                setIsLookingAway(false)
                 lookingAwayStart.current = null
             }
             numAwayLooks.current += 1
@@ -114,11 +120,7 @@ function EyeTracker({ videoRef, ready }){
 
     return (
         <div>
-            <canvas ref={canvasRef} style={{ display: 'none' }}/>
-            <input type="checkbox" checked={posture} onChange={() => {
-                postureRef.current = !postureRef.current
-                setPosture(p => !p)
-            }} />
+            <canvas ref={canvasRef} style={{ display: 'none' }} />
         </div>
     )
 }
