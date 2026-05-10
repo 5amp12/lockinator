@@ -14,6 +14,10 @@ function PostureDetector({ videoRef, ready, enabled, voice, profanity }) {
 
   const [running, setRunning] = useState(false)
 
+  useEffect(() => {
+      enabledRef.current = enabled
+  }, [enabled])
+
   useEffect(() => { enabledRef.current = enabled }, [enabled])
   useEffect(() => { voiceRef.current = voice }, [voice])
   useEffect(() => { profanityRef.current = profanity }, [profanity])
