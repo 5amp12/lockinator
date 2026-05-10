@@ -12,8 +12,9 @@ const VOICES = [
 function Home() {
   const { videoRef, ready, startWebcam, stopWebcam } = useWebcam()
   const [postureEnabled, setPostureEnabled] = useState(true)
-  const [eyeEnabled,     setEyeEnabled]     = useState(true)
-  const [voice,          setVoice]          = useState("deku")
+  const [eyeEnabled, setEyeEnabled] = useState(true)
+  const [voice, setVoice] = useState("deku")
+  const [profanity, setProfanity] = useState(false)
   const [hours,          setHours]          = useState(0)
   const [minutes,        setMinutes]        = useState(30)
   const [timeLeft,       setTimeLeft]       = useState(null)
@@ -76,12 +77,12 @@ function Home() {
           <button className={styles.btnStart} onClick={startWebcam} disabled={ready || totalSeconds() === 0}>Start</button>
           <button className={styles.btnStop}  onClick={stopWebcam}  disabled={!ready}>Stop</button>
         </div>
-      </header>
+      </header> 
 
       {/* ── Video with overlaid countdown ── */}
       <div className={styles.videoWrapper}>
-        <PostureDetector videoRef={videoRef} ready={ready} enabled={postureEnabled} voice={voice} />
-        <EyeTracking     videoRef={videoRef} ready={ready} enabled={eyeEnabled}     voice={voice} />
+        <PostureDetector videoRef={videoRef} ready={ready} enabled={postureEnabled} voice={voice} profanity={profanity}/>
+        <EyeTracking     videoRef={videoRef} ready={ready} enabled={eyeEnabled}     voice={voice} profanity={profanity}/>
 
         {ready && timeLeft !== null && (
           <div className={`${styles.timerBadge} ${isWarning ? styles.timerWarning : ''}`}>
@@ -120,7 +121,10 @@ function Home() {
             ))}
           </div>
         </div>
-
+        <div className={styles.toggleWrapper}>
+            <span className={styles.toggleLabel}>Profanity</span>
+            <input type="checkbox" checked={profanity} className={styles.checkbox} onChange={() => setProfanity(p => !p)} />
+        </div>
       </div>
     </div>
   )

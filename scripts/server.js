@@ -29,7 +29,10 @@ const modelId = "eleven_v3"
 const messages = {
     getOffYourPhone: "GET OFF YOUR PHONE!",
     whyAreYouStillOnYourPhone: "WHY ARE YOU STILL ON YOUR PHONE?!",
-    fixYourPosture: "FIX YOUR POSTURE!"
+    fixYourPosture: "FIX YOUR POSTURE!",
+    lockIn: "LOCK IN RIGHT NOW!",
+    getOffYourPhoneProfane: "GET OFF YOUR FUCKING PHONE RIGHT NOW YOU FUCK!",
+    fixYourPostureProfane: "FIX YOUR FUCKING BITCH ASS POSTURE!"
 }
 
 app.get("/audio/:voiceKey/:messageKey", async (req, res) => {
