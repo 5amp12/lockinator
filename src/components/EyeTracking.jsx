@@ -117,7 +117,9 @@ function EyeTracker({ videoRef, ready, enabled, voice, profanity }) {
                 if (numAwayLooks.current > 13 && !audioPlayingRef.current) {
                     console.log("hitting look away")
                     audioPlayingRef.current = true
-                    const messageKey = profanityRef.current ? "getOffYourPhoneProfane" : "getOffYourPhone"
+                    const phoneMessages = ["getOffYourPhone", "lockIn"]
+                    const profanityPhoneMessages = ["getOffYourPhoneProfane", "lockInProfane"]
+                    const messageKey = profanityRef.current ? profanityPhoneMessages [Math.floor(Math.random() * profanityPhoneMessages.length)] : phoneMessages [Math.floor(Math.random() * phoneMessages.length)]
                     playAudio(voiceRef.current, messageKey)
                     setTimeout(() => { audioPlayingRef.current = false }, 10000)
                 }

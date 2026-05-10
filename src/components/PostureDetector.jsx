@@ -124,7 +124,9 @@ function PostureDetector({ videoRef, ready, enabled, voice, profanity }) {
       if (performance.now() - badPostureStart.current > 5000) {
         if (numBadPosture.current > 15) {
           console.log("SLOUCHING RAHHHHHH FOUND YOU MF")
-          const messageKey = profanityRef.current ? "fixYourPostureProfane" : "fixYourPosture"
+          const postureMessages = ["fixYourPosture", "sitUp"]
+          const profanityPostureMessages = ["fixYourPostureProfane", "fixSlouchingProfane"]
+          const messageKey = profanityRef.current ? profanityPostureMessages[Math.floor(Math.random() * profanityPostureMessages.length)] : postureMessages[Math.floor(Math.random() * postureMessages.length)]
           playAudio(voiceRef.current, messageKey)
         }
         numBadPosture.current   = 0

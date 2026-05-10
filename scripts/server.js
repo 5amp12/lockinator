@@ -32,9 +32,12 @@ const messages = {
     getOffYourPhone: "GET OFF YOUR PHONE!",
     whyAreYouStillOnYourPhone: "WHY ARE YOU STILL ON YOUR PHONE?!",
     fixYourPosture: "FIX YOUR POSTURE!",
+    sitUp: "SIT UP! STOP SLOUCHING!",
     lockIn: "LOCK IN RIGHT NOW!",
     getOffYourPhoneProfane: "GET OFF YOUR FUCKING PHONE RIGHT NOW YOU FUCK!",
-    fixYourPostureProfane: "FIX YOUR FUCKING BITCH ASS POSTURE!"
+    lockInProfane: "BRO LOCK THE FUCK IN! NOW!",
+    fixYourPostureProfane: "FIX YOUR FUCKING BITCH ASS POSTURE!",
+    fixSlouchingProfane: "WHY IS YOUR SPINE FUCKING CURVED"
 }
 
 app.get("/audio/:voiceKey/:messageKey", async (req, res) => {
