@@ -20,7 +20,9 @@ const elevenlabs = new ElevenLabsClient({
 
 const voices = {
     kratos: "n5fC6zPG380LFQfIhumx",
-    deku: "henIuc3B4M8m67bTv1JS"
+    deku: "henIuc3B4M8m67bTv1JS",
+    peter_griffin: "qZigFhbH67kODRONKHG6",
+    david_attenborough: "MgEBBOUqxg94RhF7jNwg"
 }
 
 const outputFormat = "mp3_44100_128"

@@ -7,6 +7,8 @@ import { useEffect, useRef, useState } from 'react'
 const VOICES = [
   { key: "deku",   label: "Deku"   },
   { key: "kratos", label: "Kratos" },
+  { key: "peter_griffin", label: "Peter Griffin"},
+  { key: "david_attenborough", label: "David Attenborough"},
 ]
 
 function Home() {
