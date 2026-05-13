@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { FaceLandmarker, FilesetResolver } from '@mediapipe/tasks-vision'
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001"
 
 function EyeTracker({ videoRef, ready, enabled, voice, profanity }) {
     const canvasRef         = useRef(null)
@@ -26,7 +27,7 @@ function EyeTracker({ videoRef, ready, enabled, voice, profanity }) {
 
     const playAudio = async (voiceKey, messageKey) => {
         try {
-            const response = await fetch(`http://localhost:3001/audio/${voiceKey}/${messageKey}`)
+            const response = await fetch(`${API_URL}/${voiceKey}/${messageKey}`)
             if (!response.ok) return
             const blob = await response.blob()
             const url = URL.createObjectURL(blob)
